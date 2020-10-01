@@ -11,7 +11,7 @@ ADD symfony.conf /etc/nginx/sites-available/
 RUN sed -i -e"s/SERVER_NAME/${server_name}/" /etc/nginx/sites-available/symfony.conf && \
     ln -s /etc/nginx/sites-available/symfony.conf /etc/nginx/sites-enabled/symfony && \
     rm /etc/nginx/sites-enabled/default && \
-    echo "upstream php-upstream { server coreapi-php:9000; }" > /etc/nginx/conf.d/upstream.conf && \
+    echo "upstream php-upstream { server symfony5-php:9000; }" > /etc/nginx/conf.d/upstream.conf && \
     usermod -u 1000 www-data
 
 CMD ["nginx"]
