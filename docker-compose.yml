@@ -26,7 +26,7 @@ services:
         expose:
             - 9000
         volumes:
-            - coreapi_php_project_files:/var/www/symfony5
+            - symfony5_project_files:/var/www/symfony5
 
     symfony5-nginx:
         container_name: symfony5_nginx
