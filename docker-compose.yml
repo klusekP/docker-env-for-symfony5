@@ -1,0 +1,70 @@
+version: '3.5'
+
+services:
+    #################################################
+    ## General services for all projects           ##
+    #################################################
+    mongo-symfony5:
+        container_name: symfony5_mongo
+        image: mongo:latest
+        expose:
+            - 27017
+        ports:
+            - "27017:27017"
+        command: "mongod --nojournal --storageEngine wiredTiger"
+        volumes:
+            - mongo_data:/data/db
+
+    #################################################
+    ## CORE API services                           ##
+    #################################################
+    symfony5-php:
+        container_name: symfony5_php
+        build:
+            context: ${PWD}/configs/docker/symfony5-php
+            dockerfile: Dockerfile
+        expose:
+            - 9000
+        volumes:
+            - symfony5_project_files:/var/www/symfony5
+
+    symfony5-nginx:
+        container_name: symfony5_nginx
+        build:
+          context: ${PWD}/configs/docker/symfony5-nginx
+          args:
+            server_name: symfony5.local
+        links:
+            - symfony5-php
+        volumes:
+            - symfony5_project_files:/var/www/symfony5
+        expose:
+            - 80
+        ports:
+            - "80:80"
+        networks:
+            default:
+                aliases:
+                    - symfony5.local
+                    - symfony5.localhost
+
+networks:
+    default:
+        name: symfony5_network
+
+volumes:
+    mongo_data:
+        name: symfony5_mongo_data
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: $PWD/data/mongo/
+            
+    symfony5_project_files:
+        name: symfon5_files
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: ${SYMFONY5_PROJECT_PATH}
